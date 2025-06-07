@@ -1,37 +1,36 @@
 # QRY: Square Peg. Round Hole.
 
-*A microstudio for building tools that teach you to build better tools*
+*Experiments in systematic tool building - converting problems into useful software*
 
 ---
 
 ## 🎯 Core Philosophy
 
-**We don't just solve problems - we understand the humans who have them.**
+**Build better systems instead of conforming to broken ones.**
 
-QRY Labs creates better systems instead of conforming to broken ones. Through psychology-informed design, local-first privacy architecture, and systematic methodology, we build tools that empower rather than surveil, teach rather than extract, and respect human autonomy while providing genuine intelligence.
+QRY is a personal methodology for converting institutional dysfunction into useful tools. Through systematic documentation, local-first privacy, and AI-enhanced communication, I'm learning to build software that solves real problems while figuring out how to communicate technical work effectively.
 
 ## 🏗️ Ecosystem Architecture
 
-This workspace is organized by domain alignment, reflecting our web strategy and development priorities:
+This workspace is organized by domain alignment, reflecting my learning process and development experiments:
 
 ### 🌐 zone/ → qry.zone
-*Main hub and ecosystem navigation*
-- Master brand coordination
-- About QRY and philosophy
-- Cross-domain navigation
+*Documentation hub and project navigation*
+- About QRY methodology and current experiments
+- Cross-project navigation and context
 
-### 🔬 labs/ → labs.qry.zone
-*Developer tools and systematic methodology*
-- **projects/**: Core trinity (wherewasi, uroboro, examinator, doggowoof, qomoboro)
-- **roadmap/**: Strategic planning and project management
-- **docs/**: Ecosystem documentation
+### 🔬 labs/ → labs.qry.zone  
+*Developer tools and systematic experiments*
+- **projects/**: Tools I'm building (wherewasi, uroboro, examinator, doggowoof, qomoboro)
+- **roadmap/**: Strategic documentation and learning process
+- **docs/**: Methodology documentation and insights
 - **tools/**: Shared development utilities
 
 ### 🎮 arcade/ → arcade.qry.zone
-*Educational games and playful learning*
-- **projects/**: Quantum Dice, educational prototypes
-- Learning-through-play methodologies
-- Complex concept translation frameworks
+*Educational games and learning experiments*
+- **projects/**: Quantum Dice and other educational prototypes
+- Experimenting with learning-through-play approaches
+- Testing complex concept translation methods
 
 ### 🛠️ tools/ → tools.qry.zone
 *Utilities and experimental projects*
@@ -40,10 +39,10 @@ This workspace is organized by domain alignment, reflecting our web strategy and
 - Research prototypes
 
 ### 🏢 enterprise/
-*Premium domain projects*
-- **panopticron/**: Enterprise monitoring platform (panopticron.com/.io/.dev)
-- **doggowoof/**: Enthusiastic monitoring (doggowoof.dog)
-- Business-focused professional solutions
+*Production-grade projects*
+- **panopticron/**: Enterprise monitoring system (internship project)
+- **doggowoof/**: Local alert intelligence (personal tool)
+- Projects that demonstrate technical capability
 
 ### 📁 other_projects/
 *Non-QRY development work*
@@ -77,46 +76,46 @@ cd labs/
 # Full ecosystem context for AI tools and cross-project work
 ```
 
-## 🎮 The Trinity Framework
+## 🔄 The Tool Experiments
 
-**Scout → Scribe → Scholar** workflow for systematic development intelligence:
+**Building tools that solve my own problems first:**
 
-- **🔍 Scout** (wherewasi): Context and environmental awareness
-- **✍️ Scribe** (uroboro): Professional communication intelligence
-- **🎓 Scholar** (examinator): Analysis and knowledge curation
-- **🚨 Monitor** (doggowoof): Pattern intelligence and alert companion
-- **⏰ Timer** (qomoboro): Flow optimization and temporal awareness
+- **🔍 wherewasi**: Context generation for AI collaboration
+- **✍️ uroboro**: Converting work into shareable content  
+- **🎓 examinator**: Offline study companion with spaced repetition
+- **🚨 doggowoof**: Local alert intelligence that actually works
+- **⏰ qomoboro**: Simple pomodoro timer with ecosystem awareness
 
-## 📋 Current Priorities
+## 📋 Current Focus
 
-### Phase 1: Foundation (Active)
-- **uroboro**: Professional communication MVP
-- **doggowoof**: Pattern intelligence with enthusiasm
-- **wherewasi**: Shadow mode context tracking
-- **Workspace optimization**: Domain-aligned development
+### What I'm Building Now
+- **uroboro**: Making my dev work visible and shareable
+- **doggowoof**: Local alert system that doesn't drive me crazy
+- **wherewasi**: Better context switching for AI collaboration
+- **Documentation**: Learning to communicate what I build
 
-### Phase 2: Intelligence Integration (Next)
-- **Cross-tool communication**: Shadow mode IPC
-- **Ecosystem AI**: Emergent intelligence from tool interaction
-- **Educational frameworks**: Methodology validation and transfer
-- **Professional features**: Team collaboration and business value
+### What I'm Figuring Out
+- How to present technical work authentically
+- Systematic approaches to tool development
+- AI collaboration for better documentation
+- Building useful things instead of impressive-sounding things
 
-## 🌟 What Makes QRY Different
+## 🌟 What I'm Learning
 
-### **Local-First Privacy**
-Complete data sovereignty - your intelligence stays under your control
+### **Local-First Approach**
+Keep your data under your control, work offline when needed
 
-### **Psychology-Informed Design**
-Working WITH human psychology, not against it
+### **Human-Centered Design**  
+Build tools that work with how people actually think
 
-### **Anti-Surveillance Technology**
-Tools that empower rather than monitor
+### **Honest Communication**
+Document what you're actually building, not what sounds impressive
 
-### **Systematic Methodology**
-Transferable frameworks for building better tools
+### **Systematic Thinking**
+Convert problems into reusable approaches
 
-### **Square Hole Creation**
-Alternatives to conforming to broken systems
+### **Alternative Solutions**
+Build better tools instead of conforming to broken ones
 
 ## 📚 Documentation
 
@@ -128,15 +127,16 @@ Alternatives to conforming to broken systems
 
 ## 🤝 Contributing
 
-QRY Labs operates on systematic principles of empathy-driven development and human-centered design. All contributions should align with our core philosophy of creating better systems rather than conforming to broken ones.
+QRY follows systematic principles of honest development and human-centered design. The goal is building useful tools and sharing what works, not creating impressive-sounding projects.
 
 See individual project directories for specific contribution guidelines.
 
 ---
 
-**QRY Labs: Where systematic thinking meets human psychology, and square pegs create their own square holes.**
+**QRY: Where systematic thinking meets practical tool building, and square pegs create their own solutions.**
 
-*Building better tools by understanding what makes tools better.* 🔄
+*Learning to build better tools by building tools that work.* 🔄
 
-**Status**: Active ecosystem development
-**Next**: Project repository integration and systematic profiling
+**Last Updated**: June 2025  
+**Status**: Active tool development and methodology experimentation  
+**Next**: Finish current tools, document what works, figure out what's next
