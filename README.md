@@ -20,7 +20,7 @@ This workspace is organized by domain alignment, reflecting our web strategy and
 - About QRY and philosophy
 - Cross-domain navigation
 
-### 🔬 labs/ → labs.qry.zone  
+### 🔬 labs/ → labs.qry.zone
 *Developer tools and systematic methodology*
 - **projects/**: Core trinity (wherewasi, uroboro, examinator, doggowoof, qomoboro)
 - **roadmap/**: Strategic planning and project management
@@ -76,7 +76,7 @@ cd labs/
 **Scout → Scribe → Scholar** workflow for systematic development intelligence:
 
 - **🔍 Scout** (wherewasi): Context and environmental awareness
-- **✍️ Scribe** (uroboro): Professional communication intelligence  
+- **✍️ Scribe** (uroboro): Professional communication intelligence
 - **🎓 Scholar** (examinator): Analysis and knowledge curation
 - **🚨 Monitor** (doggowoof): Pattern intelligence and alert companion
 - **⏰ Timer** (qomoboro): Flow optimization and temporal awareness
@@ -100,7 +100,7 @@ cd labs/
 ### **Local-First Privacy**
 Complete data sovereignty - your intelligence stays under your control
 
-### **Psychology-Informed Design**  
+### **Psychology-Informed Design**
 Working WITH human psychology, not against it
 
 ### **Anti-Surveillance Technology**
@@ -131,6 +131,5 @@ See individual project directories for specific contribution guidelines.
 
 *Building better tools by understanding what makes tools better.* 🔄
 
-**Last Updated**: January 2025  
-**Status**: Active ecosystem development  
+**Status**: Active ecosystem development
 **Next**: Project repository integration and systematic profiling
