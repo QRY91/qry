@@ -64,9 +64,9 @@
 - [ ] Code blocks properly formatted with file paths
 
 #### **Strategic Documents**
-- [ ] AI_CONTEXT_BRIEFING.md updated if ecosystem evolved
-- [ ] QRY_NORTHSTARS.md alignment maintained
-- [ ] AI_TIMEKEEPING.md current for next session
+- [ ] CONTEXT_BRIEFING.md updated if ecosystem evolved
+- [ ] ../QRY_NORTHSTARS.md alignment maintained
+- [ ] TIMEKEEPING.md current for next session
 - [ ] Project profiles updated if status changed
 
 ---
@@ -162,7 +162,7 @@
 ## 🔮 Preparing for Future Sessions
 
 ### **Context Preservation**
-- [ ] Update AI_TIMEKEEPING.md with current date/time
+- [ ] Update TIMEKEEPING.md with current date/time
 - [ ] Note any priorities or blockers for next session
 - [ ] Document any ongoing work or decision points
 - [ ] Capture any methodology insights for future application

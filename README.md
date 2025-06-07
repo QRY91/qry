@@ -65,6 +65,12 @@ cd labs/projects/[project_name]/
 # Individual project development
 ```
 
+### For AI Collaboration
+```bash
+cd ai/
+# Complete framework for transparent, systematic AI partnership
+```
+
 ### For Ecosystem Intelligence
 ```bash
 cd labs/
@@ -114,6 +120,7 @@ Alternatives to conforming to broken systems
 
 ## 📚 Documentation
 
+- **AI Collaboration**: `ai/` - Complete framework for systematic AI partnership
 - **Strategic Overview**: `labs/roadmap/STRATEGIC_OVERVIEW.md`
 - **Philosophy**: `labs/roadmap/01_philosophy_identity/square_peg_manifesto.md`
 - **Project Profiles**: `labs/roadmap/projects/`

@@ -10,13 +10,13 @@
 ## 🚀 Quick Start Checklist (5-Minute Orientation)
 
 ### **Step 1: Temporal Context** ⏰
-- [ ] Read `AI_TIMEKEEPING.md` for current date/time context
+- [ ] Read `TIMEKEEPING.md` for current date/time context
 - [ ] Update any date references to reflect current timeframe (June 2025, Q2 2025)
 - [ ] Note any time-sensitive priorities or deadlines
 
 ### **Step 2: Core Understanding** 🎯
-- [ ] Read `AI_CONTEXT_BRIEFING.md` for complete ecosystem overview
-- [ ] Review `QRY_NORTHSTARS.md` for methodology and principles
+- [ ] Read `CONTEXT_BRIEFING.md` for complete ecosystem overview
+- [ ] Review `../QRY_NORTHSTARS.md` for methodology and principles
 - [ ] Understand "Square Peg, Round Hole" philosophy
 
 ### **Step 3: Current Priorities** 📋
@@ -29,18 +29,18 @@
 ## 📚 Essential Reading Priority Order
 
 ### **Tier 1: Must Read (Required for Any Work)**
-1. `AI_CONTEXT_BRIEFING.md` - Complete ecosystem overview
-2. `QRY_NORTHSTARS.md` - Core methodology and principles
-3. `AI_TIMEKEEPING.md` - Current temporal context
+1. `CONTEXT_BRIEFING.md` - Complete ecosystem overview
+2. `../QRY_NORTHSTARS.md` - Core methodology and principles
+3. `TIMEKEEPING.md` - Current temporal context
 
 ### **Tier 2: Project-Specific (When Working on Specific Tools)**
-4. `labs/roadmap/STRATEGIC_OVERVIEW.md` - Strategic context
-5. `labs/roadmap/projects/ECOSYSTEM_SCOPE.md` - Complete project inventory
-6. Relevant project profile: `labs/roadmap/projects/[project_name]/project_profile.md`
+4. `../labs/roadmap/STRATEGIC_OVERVIEW.md` - Strategic context
+5. `../labs/roadmap/projects/ECOSYSTEM_SCOPE.md` - Complete project inventory
+6. Relevant project profile: `../labs/roadmap/projects/[project_name]/project_profile.md`
 
 ### **Tier 3: Deep Context (For Strategic Work)**
-7. `labs/docs/QRY_MICROSTUDIO_ARCHITECTURE.md` - Complete infrastructure understanding
-8. `temp_migration_sorting/QRY_ECOSYSTEM_INTELLIGENCE_BREAKTHROUGH.md` - Recent discoveries
+7. `../labs/docs/QRY_MICROSTUDIO_ARCHITECTURE.md` - Complete infrastructure understanding
+8. `../temp_migration_sorting/QRY_ECOSYSTEM_INTELLIGENCE_BREAKTHROUGH.md` - Recent discoveries
 9. Project-specific meta-capture demos for 95-minute analysis examples
 
 ---
@@ -76,8 +76,8 @@
 ## 🔍 Context Verification Protocol
 
 ### **Before Starting Any Work**
-- [ ] Confirm current date and timeline from `AI_TIMEKEEPING.md`
-- [ ] Verify understanding of QRY methodology from `QRY_NORTHSTARS.md`
+- [ ] Confirm current date and timeline from `TIMEKEEPING.md`
+- [ ] Verify understanding of QRY methodology from `../QRY_NORTHSTARS.md`
 - [ ] Check current Phase 1 priorities (uroboro, doggowoof, wherewasi)
 - [ ] Identify which domain the work falls under (labs, arcade, enterprise, tools)
 
@@ -148,7 +148,7 @@
 - Check for cross-project enhancement opportunities
 
 ### **When Stuck or Uncertain**
-- Return to `AI_CONTEXT_BRIEFING.md` for ecosystem overview
+- Return to `CONTEXT_BRIEFING.md` for ecosystem overview
 - Check relevant project profiles for specific context
 - Reference QRY methodology principles from northstars
 - Ask clarifying questions grounded in systematic understanding
