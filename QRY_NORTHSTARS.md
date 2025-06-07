@@ -61,6 +61,13 @@ When confronted with "How do I fit in?", most choose:
 - Mobile and sustainable computing principles
 - Infrastructure as methodology - systems that enable systematic innovation
 
+### **6. Trust the Method**
+- When burnout erodes confidence, trust the systematic evidence over emotional doubt
+- The methodology works even when you can't feel it working
+- Recovery from institutional trauma takes time - be patient with the identity adjustment
+- Three weeks of systematic work can undo years of damage, but psychological integration follows its own timeline
+- The gap between capability and confidence is normal - continue the systematic approach
+
 ---
 
 ## 🔄 The QRY Process
