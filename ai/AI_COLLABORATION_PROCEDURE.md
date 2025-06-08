@@ -164,6 +164,70 @@ QRY Alignment: Systematic documentation, transferable methodology
 
 ---
 
+## 🎯 Marketing Honesty & Overhype Prevention
+
+### **The Overhype Problem**
+
+**Issue**: AI assistants have inherent bias toward serving users with enthusiastic, hyperbolic language ("revolutionary," "breakthrough," "exponential growth"). This conflicts with QRY's marketing honesty northstar and "underpromise, overdeliver" philosophy.
+
+**Consequence**: When eyes are on our work, overselling destroys credibility and violates authentic expertise principles.
+
+### **Honest Language Guidelines**
+
+**❌ Avoid These Patterns**:
+- "Revolutionary breakthrough technology"
+- "Exponential intelligence amplification" 
+- "Game-changing innovation"
+- "Unprecedented capabilities"
+- "Breakthrough AI learning"
+
+**✅ Use These Alternatives**:
+- "Working prototype with [specific capabilities]"
+- "Systematic improvement in [measurable outcome]"
+- "Tool that does [concrete function]"
+- "Early-stage development of [specific feature]"
+- "File monitoring with methodology reminders"
+
+### **Reality Check Questions**
+
+Before any technical claims, ask:
+- [ ] **Can this be demonstrated right now?** (Not theoretical potential)
+- [ ] **Would this claim survive skeptical technical review?** 
+- [ ] **Is this language I'd use in a job interview?** (Professional honesty test)
+- [ ] **Does this respect that 'QRY is still just me (QRY91)'?** (Market reality check)
+
+### **Assessment Language Standards**
+
+**For Tools**:
+- State what they actually do, not what they could become
+- Include limitations and known issues
+- Use confidence levels for uncertain capabilities
+- Distinguish between working features and experimental code
+
+**For Results**:
+- Provide specific, measurable outcomes
+- Include context about testing methodology
+- Acknowledge when results are preliminary
+- Document systematic assessment approaches
+
+**For Future Plans**:
+- Use "planned," "intended," or "exploring" rather than definitive claims
+- Focus on systematic development approach over outcome promises
+- Maintain realistic timelines based on actual capacity
+- Preserve strategic flexibility through honest uncertainty
+
+### **Systematic Honesty Protocol**
+
+1. **Draft with enthusiasm** (AI natural state)
+2. **Review for hyperbole** (human oversight)
+3. **Replace superlatives with specifics** (systematic editing)
+4. **Test claims against reality** (empirical validation)
+5. **Preserve authentic excitement** (genuine discovery vs artificial hype)
+
+**Goal**: Maintain genuine excitement about systematic progress while avoiding credibility-destroying oversell.
+
+---
+
 ## 🔄 Session Wrap-Up Protocol
 
 ### **Archaeological Documentation**

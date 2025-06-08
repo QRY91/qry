@@ -54,14 +54,22 @@ QRY chooses option 6: Create a square hole** (build better tools)
 - Progressive complexity that builds naturally
 - Transferable frameworks for educational content creation
 
-### **5. Systematic Tool Building**
+### **5. Constraint-Driven Accessibility ("Stressed Student on a Bus" Design)**
+- Design for worst-case scenarios to create universally accessible tools
+- Mobile-first, offline-capable, minimal-resource architecture
+- Short commands, phone-friendly interfaces, works in cramped spaces
+- No-internet study capability, dying battery tolerance
+- Serve the unserved: if it works for crisis cramming, it works for everyone
+- Weaponize limitations into accessibility breakthroughs
+
+### **6. Systematic Tool Building**
 - Specialized tools for specific functions (not monolithic solutions)
 - Local-first architecture for privacy and independence
 - Integration between tools without external dependencies
 - Sustainable computing principles (works offline, minimal resources)
 - Building infrastructure that enables continued systematic development
 
-### **6. Trust the Method**
+### **7. Trust the Method**
 - When burnout erodes confidence, trust the systematic evidence over emotional doubt
 - The methodology works even when you can't feel it working
 - Recovery from institutional trauma takes time - be patient with the identity adjustment
@@ -196,6 +204,7 @@ QRY methodology aims to build technology that:
 - **Respects how people actually think** through psychology-informed design
 - **Enables learning through building** rather than punishment for not knowing
 - **Creates practical alternatives** to surveillance-heavy productivity software
+- **Serves the unserved** through constraint-driven design that works for stressed students on buses, people with limited connectivity, small screens, and crisis situations
 
 ### **Systematic Building Approach**
 My systematic approach:

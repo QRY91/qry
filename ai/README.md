@@ -13,9 +13,10 @@
 
 1. **Morning startup**: `MORNING_LAB_STARTUP.md` - Systematic morning collaboration ritual
 2. **Read first**: `CONTEXT_BRIEFING.md` - Complete ecosystem overview
-3. **Check time**: `TIMEKEEPING.md` - Current date and temporal context  
-4. **Follow procedure**: `STARTUP_PROCEDURE.md` - Systematic onboarding
-5. **End properly**: `WRAP_UP_PROCEDURE.md` - Quality assurance closure
+3. **Safety first**: `SAFETY_AND_BACKUP_PROCEDURES.md` - **MANDATORY** data protection protocols
+4. **Check time**: `TIMEKEEPING.md` - Current date and temporal context  
+5. **Follow procedure**: `STARTUP_PROCEDURE.md` - Systematic onboarding
+6. **End properly**: `WRAP_UP_PROCEDURE.md` - Quality assurance closure
 
 **Total orientation time**: ~10 minutes for complete QRY methodology understanding
 
@@ -26,6 +27,7 @@
 ### **Core Infrastructure**
 - `MORNING_LAB_STARTUP.md` - **Systematic morning ritual** for AI collaboration startup
 - `CONTEXT_BRIEFING.md` - **Master orientation document** with complete QRY ecosystem overview
+- `SAFETY_AND_BACKUP_PROCEDURES.md` - **MANDATORY safety protocols** for data protection during experiments
 - `STARTUP_PROCEDURE.md` - **Systematic onboarding** for effective AI collaboration 
 - `WRAP_UP_PROCEDURE.md` - **Quality assurance** and session closure protocols
 - `TIMEKEEPING.md` - **Current date/time context** for accurate documentation

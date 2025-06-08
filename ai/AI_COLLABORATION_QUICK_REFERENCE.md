@@ -13,6 +13,15 @@
 - [ ] Identify AI collaboration goal
 - [ ] Prepare context artifacts (code samples, requirements)
 
+### **🔒 SAFETY CHECK (MANDATORY)**
+- [ ] Verify recent backup exists: `ls -la /qry/backups/uroboro/ | tail -1`
+- [ ] Check database health: `sqlite3 ~/.local/share/uroboro/uroboro.sqlite "SELECT COUNT(*) FROM captures;"`
+- [ ] For risky operations: `qry-chaos [experiment-name] --force`
+
+**⚠️ NEVER proceed with database changes, ecosystem modifications, or experimental features without current backups!**
+
+**See**: `SAFETY_AND_BACKUP_PROCEDURES.md` for complete safety protocols
+
 ### **Context Pattern Template**
 ```
 Current state: [What we have now]
