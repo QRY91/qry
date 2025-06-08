@@ -98,17 +98,12 @@ if [ "$1" = "--auto-commit" ]; then
 
 - Database size: $DB_SIZE  
 - Backup: $BACKUP_FILE
-- Safety net before junkyard engineer chaos experiments
+- Safety backup before development work
 - Community knowledge preservation"
     echo -e "${GREEN}✅ Backup committed to git${NC}"
 fi
 
 echo ""
-echo -e "${GREEN}🎉 Backup complete!${NC}"
-echo "Your precious QRY methodology insights are now preserved."
-echo "Ready for junkyard engineer experiments! 🔬⚡"
-
-# Junkyard engineer blessing
-echo ""
-echo -e "${BLUE}Mad scientist mode: ENABLED${NC}"
-echo "Go forth and break things beautifully - your data is safe! 💥"
+echo -e "${GREEN}✅ Backup complete!${NC}"
+echo "Your data has been safely backed up."
+echo "You can now proceed with development work."

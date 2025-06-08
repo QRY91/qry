@@ -13,8 +13,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-echo "🔍 QRY Backup Verification"
-echo "========================="
+echo "Backup Verification"
+echo "==================="
 
 # Test 1: Check if we have backups
 echo -n "1. Checking for existing backups... "
@@ -90,12 +90,12 @@ fi
 rm -rf "$TEST_DIR"
 
 echo ""
-echo -e "${GREEN}🎉 Backup system verification complete!${NC}"
+echo -e "${GREEN}✅ Backup verification complete${NC}"
 echo ""
 echo "Summary:"
 echo "- Backups available: $BACKUP_COUNT"
 echo "- Records in latest backup: $BACKUP_COUNT"
 echo "- Recovery test: PASSED"
 echo ""
-echo -e "${GREEN}✅ Your data CAN be recovered from backups${NC}"
-echo "You're safe to proceed with chaos experiments!"
+echo -e "${GREEN}✅ Your data can be recovered from backups${NC}"
+echo "Safe to proceed with development work."
