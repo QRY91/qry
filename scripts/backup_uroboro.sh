@@ -15,7 +15,8 @@ set -e  # Exit on error - anti-fragile scripting
 
 # Configuration
 UROBORO_DB="$HOME/.local/share/uroboro/uroboro.sqlite"
-BACKUP_DIR="$(dirname "$0")/../backups/uroboro"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+BACKUP_DIR="$(dirname "$SCRIPT_DIR")/backups/uroboro"
 TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
 BACKUP_FILE="uroboro-backup-${TIMESTAMP}.sqlite"
 MAX_BACKUPS=10  # Keep last 10 backups
@@ -91,9 +92,7 @@ done
 if [ "$1" = "--auto-commit" ]; then
     echo ""
     echo -e "${YELLOW}📝 Committing backup to git...${NC}"
-    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-    REPO_ROOT="$(dirname "$SCRIPT_DIR")"
-    cd "$REPO_ROOT"
+    cd "$(dirname "$SCRIPT_DIR")"
     git add "backups/uroboro/$BACKUP_FILE"
     git commit -m "Backup uroboro database before experiments - $RECORD_COUNT captures preserved
 
