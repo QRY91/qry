@@ -24,6 +24,11 @@
 - [ ] Note personal favorites: uroboro + doggowoof get priority attention
 - [ ] Identify any urgent or blocked work requiring immediate attention
 
+### **Step 4: AI Collaboration Setup** 🤖
+- [ ] Read `AI_COLLABORATION_PROCEDURE.md` for systematic development workflow
+- [ ] Prepare session context and archaeological documentation approach
+- [ ] Identify AI collaboration goals for current session
+
 ---
 
 ## 📚 Essential Reading Priority Order
@@ -32,6 +37,7 @@
 1. `CONTEXT_BRIEFING.md` - Complete ecosystem overview
 2. `../QRY_NORTHSTARS.md` - Core methodology and principles
 3. `TIMEKEEPING.md` - Current temporal context
+4. `AI_COLLABORATION_PROCEDURE.md` - Systematic human-AI development workflow
 
 ### **Tier 2: Project-Specific (When Working on Specific Tools)**
 4. `../labs/roadmap/STRATEGIC_OVERVIEW.md` - Strategic context
@@ -102,6 +108,7 @@
 - **Systematic but not academic** - Practical methodology without jargon
 - **Evidence-based confidence** - Ground suggestions in QRY analysis and documentation
 - **Respect for complexity** - Don't oversimplify sophisticated concepts
+- **Transparent AI collaboration** - Follow `AI_COLLABORATION_PROCEDURE.md` for systematic documentation
 
 ### **Problem-Solving Approach**
 - **Understand the human behind the problem** - QRY core principle
@@ -146,6 +153,8 @@
 - Consider ecosystem intelligence implications
 - Document insights for methodology transfer
 - Check for cross-project enhancement opportunities
+- Follow AI collaboration procedure for transparent, systematic development
+- Include prompts and human oversight in commit documentation
 
 ### **When Stuck or Uncertain**
 - Return to `CONTEXT_BRIEFING.md` for ecosystem overview

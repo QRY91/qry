@@ -1,7 +1,7 @@
 # AI Tool Tutorial: QRY Ecosystem Tool Usage Patterns
 
 **Purpose**: Systematic guide for AI assistants using QRY ecosystem tools  
-**Current Date**: June 7, 2025  
+**Current Date**: June 8, 2025
 **Status**: Living tutorial - update as tool usage patterns evolve  
 **Scope**: Complete reference for effective tool integration in AI collaboration
 
@@ -12,6 +12,10 @@
 ### **Uroboro - Communication Intelligence**
 **Location**: `labs/projects/uroboro/uroboro`  
 **Purpose**: Capture insights and generate professional communication content
+
+### **Wherewasi - Context Intelligence**
+**Location**: `labs/projects/wherewasi/wherewasi`  
+**Purpose**: Preserve context across sessions and maintain archaeological documentation
 
 #### **Standard Capture Pattern**
 ```bash
@@ -62,24 +66,59 @@ cd labs/projects/uroboro
 ./uroboro capture --db "Validated complex concept translation methodology through quantum dice mechanics analysis." --project quantum-dice --tags educational-methodology,complex-concept-translation,methodology-validation
 ```
 
+**AI Collaboration Methodology**:
+```bash
+./uroboro capture --prompt "Multi-shot refinement pattern for context preservation" --project wherewasi-dev --tags ai-collab,context-intelligence,methodology --effectiveness-rating 4
+```
+
+### **Wherewasi Usage Patterns**
+
+#### **Session Management**
+```bash
+# Start new AI collaboration session
+wherewasi new-session --type ai-collab --project [project-name] --date $(date +%Y-%m-%d)
+
+# Load previous session context
+wherewasi load --session latest --include methodology,insights,context
+
+# Save current session with archaeological documentation
+wherewasi save --session current --archaeological --transferable-methodology
+```
+
+#### **Context Preservation**
+```bash
+# Track methodology evolution across sessions
+wherewasi track --methodology-evolution --improvements "[what got better]" --challenges "[what's still hard]"
+
+# Create archaeological record for methodology transfer
+wherewasi archive --session [session-id] --include full-prompt-history,methodology-insights --format archaeological-record
+```
+
 ---
 
-## 🔧 Tool Integration Workflow
+## 🔧 Integrated Tool Workflow (uroboro + wherewasi)
 
-### **At Session Start**
+### **Morning Lab Startup** (Following MORNING_LAB_STARTUP.md)
 1. **Update timekeeping**: Modify `ai/TIMEKEEPING.md` with current date/time
-2. **Check tool status**: Verify uroboro database location and accessibility
-3. **Plan capture strategy**: Identify likely project names and tags for session work
+2. **Context restoration**: `wherewasi load --session latest --include methodology,insights,context`
+3. **Tool initialization**: `./uroboro capture-mode --active --session morning-$(date +%Y-%m-%d)`
+4. **Generate situation report**: AI creates morning digest for coffee-time review
 
-### **During Session**
-1. **Capture major insights**: Use uroboro for significant discoveries or strategic insights
-2. **Document systematically**: Follow QRY methodology for all tool usage
-3. **Consider ecosystem impact**: Tag captures for cross-project relevance
+### **Active AI Collaboration** (Following INTEGRATED_AI_COLLABORATION.md)
+1. **Prompt capture**: `uro capture --prompt "[prompt content]" --project [name] --tags ai-collab,methodology`
+2. **Context tracking**: `wherewasi track --methodology-evolution --session current`
+3. **Systematic refinement**: Multi-shot prompting with archaeological documentation
+4. **Quality assurance**: Verify QRY alignment (local-first, psychology-informed)
 
-### **At Session End**
-1. **Final capture**: Summarize session accomplishments and insights
-2. **Update tutorial**: Note any new usage patterns or tool preferences
-3. **Check integration**: Ensure tool usage aligns with QRY methodology
+### **Session Documentation**
+1. **Generate commit messages**: `uro generate-commit-message --session-today --project [name]`
+2. **Archive session**: `wherewasi archive --session current --archaeological --transferable-methodology`
+3. **Methodology insights**: Capture patterns for future sessions and community transfer
+
+### **Session Wrap-Up**
+1. **Final insights**: `uro capture --methodology-evolution "[what we learned today]"`
+2. **Context preparation**: `wherewasi prepare-next-session --context-continuity`
+3. **Update procedures**: Note any new usage patterns or improvements discovered
 
 ---
 
@@ -151,11 +190,15 @@ For insights that benefit others:
 
 ## 🔄 Future Tool Integration
 
+### **Active Tool Integrations**
+- **wherewasi + uroboro**: Meta-intelligence loop for AI collaboration methodology
+- **Morning lab startup**: Systematic session initialization with context restoration
+- **Archaeological documentation**: Transparent methodology preservation and transfer
+
 ### **Planned Tool Integrations**
-- **wherewasi**: Context generation for uroboro captures
-- **doggowoof**: Pattern recognition for capture optimization
-- **qomoboro**: Time-based capture automation and session management
-- **examinator**: Analysis of capture patterns and methodology insights
+- **doggowoof**: Pattern recognition for capture optimization and workflow alerts
+- **qomoboro**: Time-based capture automation and session management integration
+- **examinator**: Analysis of capture patterns and methodology insights for continuous improvement
 
 ### **Tool Preference Evolution**
 This tutorial will evolve as:
@@ -179,6 +222,8 @@ This tutorial will evolve as:
 - **Strategic thinking** advances QRY ecosystem development
 - **Community value** creates frameworks others can adopt
 - **Professional credibility** demonstrates competence and systematic thinking
+- **Archaeological preservation** enables methodology transfer and continuous improvement
+- **Context continuity** maintains session-to-session workflow intelligence
 
 ---
 

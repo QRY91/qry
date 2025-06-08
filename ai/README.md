@@ -1,7 +1,7 @@
 # AI Collaboration Infrastructure
 
 **Purpose**: Comprehensive framework for transparent, systematic AI partnership within the QRY ecosystem  
-**Current Date**: June 7, 2025  
+**Current Date**: June 8, 2025
 **Status**: Living infrastructure - evolves as AI collaboration patterns mature  
 **Scope**: Complete toolkit for effective, ethical AI collaboration
 
@@ -11,10 +11,11 @@
 
 **New to QRY ecosystem? Start here:**
 
-1. **Read first**: `CONTEXT_BRIEFING.md` - Complete ecosystem overview
-2. **Check time**: `TIMEKEEPING.md` - Current date and temporal context  
-3. **Follow procedure**: `STARTUP_PROCEDURE.md` - Systematic onboarding
-4. **End properly**: `WRAP_UP_PROCEDURE.md` - Quality assurance closure
+1. **Morning startup**: `MORNING_LAB_STARTUP.md` - Systematic morning collaboration ritual
+2. **Read first**: `CONTEXT_BRIEFING.md` - Complete ecosystem overview
+3. **Check time**: `TIMEKEEPING.md` - Current date and temporal context  
+4. **Follow procedure**: `STARTUP_PROCEDURE.md` - Systematic onboarding
+5. **End properly**: `WRAP_UP_PROCEDURE.md` - Quality assurance closure
 
 **Total orientation time**: ~10 minutes for complete QRY methodology understanding
 
@@ -23,10 +24,17 @@
 ## 📁 Directory Contents
 
 ### **Core Infrastructure**
+- `MORNING_LAB_STARTUP.md` - **Systematic morning ritual** for AI collaboration startup
 - `CONTEXT_BRIEFING.md` - **Master orientation document** with complete QRY ecosystem overview
 - `STARTUP_PROCEDURE.md` - **Systematic onboarding** for effective AI collaboration 
 - `WRAP_UP_PROCEDURE.md` - **Quality assurance** and session closure protocols
 - `TIMEKEEPING.md` - **Current date/time context** for accurate documentation
+
+### **AI Collaboration Methodology**
+- `AI_COLLABORATION_PROCEDURE.md` - **Systematic development workflow** with archaeological documentation
+- `AI_COLLABORATION_QUICK_REFERENCE.md` - **Rapid reference** for active collaboration sessions
+- `INTEGRATED_AI_COLLABORATION.md` - **Meta-intelligence loop** using uroboro + wherewasi
+- `AI_TOOL_TUTORIAL.md` - **Tool usage patterns** for QRY ecosystem integration
 
 ### **Future Expansion Areas**
 This directory is designed to scale systematically as AI collaboration evolves:
@@ -63,16 +71,20 @@ This directory is designed to scale systematically as AI collaboration evolves:
 ## 🔄 Usage Patterns
 
 ### **For AI Assistants**
-1. **Session Start**: Follow `STARTUP_PROCEDURE.md` for systematic orientation
-2. **During Work**: Reference `CONTEXT_BRIEFING.md` for ecosystem understanding
-3. **When Stuck**: Return to core QRY methodology in `../QRY_NORTHSTARS.md`
-4. **Session End**: Complete `WRAP_UP_PROCEDURE.md` for quality assurance
+1. **Morning Startup**: Follow `MORNING_LAB_STARTUP.md` for systematic collaboration ritual
+2. **Session Orientation**: Use `STARTUP_PROCEDURE.md` for complete ecosystem understanding
+3. **Active Collaboration**: Reference `AI_COLLABORATION_QUICK_REFERENCE.md` during work
+4. **During Work**: Use `CONTEXT_BRIEFING.md` for ecosystem understanding and `AI_TOOL_TUTORIAL.md` for tool usage
+5. **When Stuck**: Return to core QRY methodology in `../QRY_NORTHSTARS.md`
+6. **Session End**: Complete `WRAP_UP_PROCEDURE.md` for quality assurance
 
 ### **For Human Collaborators**
-1. **Update time context**: Modify `TIMEKEEPING.md` at session start
-2. **Review AI work**: Use wrap-up procedure as quality checklist
-3. **Improve procedures**: Update documents based on collaboration insights
-4. **Community sharing**: Contribute improvements to collaborative methodology
+1. **Morning Ritual**: Use `MORNING_LAB_STARTUP.md` for systematic session initialization
+2. **Update time context**: Modify `TIMEKEEPING.md` at session start
+3. **Tool Integration**: Use `INTEGRATED_AI_COLLABORATION.md` for uroboro + wherewasi workflow
+4. **Review AI work**: Use wrap-up procedure as quality checklist
+5. **Improve procedures**: Update documents based on collaboration insights
+6. **Community sharing**: Contribute improvements to collaborative methodology
 
 ### **For Community Members**
 1. **Adopt frameworks**: Use QRY AI collaboration approaches in your own work
