@@ -298,7 +298,7 @@ other_projects/notes/
 other_projects/panopticron*/
 other_projects/threezone/
 other_projects/vent/
-other_projects/gamedev/
+other_projects/gamedev/*
 
 # But keep project profile documentation
 !**/project_profile.md
