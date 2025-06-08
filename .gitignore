@@ -293,8 +293,12 @@ labs/projects/qryai/
 zone/qryzone/
 
 # Other projects with independent repos
-other_projects/bokondo/
 other_projects/*/
+other_projects/notes/
+other_projects/panopticron*/
+other_projects/threezone/
+other_projects/vent/
+other_projects/gamedev/
 
 # But keep project profile documentation
 !**/project_profile.md
