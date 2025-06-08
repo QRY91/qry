@@ -1,0 +1,35 @@
+QRY Pre-Chaos Backup Manifest
+==============================
+Experiment: safety-test-2025-06-08-213040
+Timestamp: 2025-06-08-213040
+Backup Directory: /home/qry/stuff/projects/qry/backups/chaos/safety-test-2025-06-08-213040-2025-06-08-213040
+
+✅ QRY_NORTHSTARS.md
+✅ AI collaboration infrastructure
+✅ uroboro ecosystem package
+✅ wherewasi ecosystem package
+
+Git State:
+f13ecd3740b12431ea978713d92a0fb9b949db3b
+ M .gitignore
+ M QRY_NORTHSTARS.md
+ M ai/AI_COLLABORATION_PROCEDURE.md
+ M ai/AI_COLLABORATION_QUICK_REFERENCE.md
+ M labs/projects/examinator
+ M labs/projects/uroboro
+ M labs/projects/wherewasi
+?? ai/SAFETY_AND_BACKUP_PROCEDURES.md
+?? ai/content/ai_reductive_nature_and_learning_imperative.md
+?? ai/content/qryai_methodology_transfer_testing_reality_check.md
+?? ai/test_integration.md
+?? backups/chaos/safety-test-2025-06-08-213040-2025-06-08-213040/
+?? ecosystem_test.md
+?? extract_uroboro.sqlite.sql
+?? labs/ECOSYSTEM_DATABASE_INTEGRATION.md
+?? labs/ECOSYSTEM_IMPLEMENTATION_COMPLETE.md
+?? labs/ECOSYSTEM_INTEGRATION_QUICKREF.md
+?? labs/ECOSYSTEM_INTEGRATION_TEST.sh
+?? labs/ECOSYSTEM_UNIFICATION_STRATEGY.md
+?? scripts/backup_before_chaos.sh
+?? scripts/qry_backup_aliases.sh
+?? scripts/test_backup_systems.sh
