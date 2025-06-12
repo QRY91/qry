@@ -280,7 +280,6 @@ arcade/projects/quantum_dice/
 arcade/projects/slopsquid/
 enterprise/projects/doggowoof/
 enterprise/projects/panopticron/
-# Temporarily commented out for ecosystem implementation
 labs/projects/examinator/
 labs/projects/examinator.wiki/
 labs/projects/qomoboro/
@@ -300,6 +299,8 @@ other_projects/threezone/
 other_projects/vent/
 other_projects/career_strategy/
 other_projects/gamedev/*
+work/
+atelier/
 
 # But keep project profile documentation
 !**/project_profile.md
