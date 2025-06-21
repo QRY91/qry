@@ -1,0 +1,13 @@
+# Sphinx Generator Requirements
+#
+# This tool uses only Python standard library modules to maintain
+# simplicity and reduce dependencies (permacomputing principle).
+#
+# System Requirements:
+# - Python 3.8+
+# - Ollama (install from https://ollama.ai)
+#
+# No Python packages required beyond standard library.
+#
+# To verify your Python installation has everything needed:
+# python -c "import argparse, os, sys, json, subprocess, pathlib, typing; print('✅ All dependencies available')"

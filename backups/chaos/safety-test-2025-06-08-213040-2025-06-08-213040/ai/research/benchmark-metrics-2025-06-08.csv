@@ -1,3 +1,0 @@
-benchmark_id,date,session_type,tool_calls_total,tool_calls_info_gathering,tool_calls_output,processing_time_minutes,words_processed,words_generated,compression_ratio_percent,context_accuracy_percent,projects_analyzed,cross_references_found,estimated_input_tokens,estimated_output_tokens,total_estimated_tokens,words_per_tool_call,time_efficiency_ratio,manual_equivalent_minutes
-CRB-2025-06-08-001,2025-06-08,morning_startup,15,13,2,5,18747,2356,12.6,100,3,20,27500,3750,31250,1249,10,45
-CRB-2025-06-08-002,2025-06-08,ad_hoc_context_restoration,6,5,1,2,11390,0,0,95,0,0,14807,0,14807,1898,7.5,15

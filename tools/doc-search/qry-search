@@ -1,0 +1,141 @@
+#!/bin/bash
+
+# QRY Documentation Search Wrapper Script
+# Makes it easy to use the semantic search system
+
+set -e
+
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+VENV_PATH="$SCRIPT_DIR/venv"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Helper functions
+log_info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+
+log_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+log_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+log_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+# Check if virtual environment exists
+if [[ ! -d "$VENV_PATH" ]]; then
+    log_error "Virtual environment not found. Please run ./setup.sh first."
+    exit 1
+fi
+
+# Activate virtual environment
+source "$VENV_PATH/bin/activate"
+
+# Check if no arguments provided
+if [[ $# -eq 0 ]]; then
+    echo "🔍 QRY Documentation Search"
+    echo "=========================="
+    echo
+    echo "Usage: ./qry-search <command> [options]"
+    echo
+    echo "Commands:"
+    echo "  search <query>     Search documents semantically"
+    echo "  stats             Show collection statistics"
+    echo "  test              Test system connections"
+    echo "  embed [--force]   Embed all documents"
+    echo "  reset             Reset embeddings collection"
+    echo "  web               Start web interface"
+    echo
+    echo "Examples:"
+    echo "  ./qry-search search 'AI collaboration procedures'"
+    echo "  ./qry-search search 'PostHog integration strategy'"
+    echo "  ./qry-search web"
+    echo "  ./qry-search stats"
+    echo
+    echo "Web Interface:"
+    echo "  ./qry-search web"
+    echo "  Then visit: http://localhost:5001"
+    echo
+    exit 0
+fi
+
+# Handle commands
+COMMAND="$1"
+shift
+
+case "$COMMAND" in
+    "search")
+        if [[ $# -eq 0 ]]; then
+            log_error "Please provide a search query"
+            echo "Usage: ./qry-search search 'your query here'"
+            exit 1
+        fi
+
+        QUERY="$*"
+        log_info "Searching for: '$QUERY'"
+        python "$SCRIPT_DIR/qry_doc_search.py" search "$QUERY" --limit 10
+        ;;
+
+    "stats")
+        log_info "Getting collection statistics..."
+        python "$SCRIPT_DIR/qry_doc_search.py" stats
+        ;;
+
+    "test")
+        log_info "Testing system connections..."
+        python "$SCRIPT_DIR/qry_doc_search.py" test
+        ;;
+
+    "embed")
+        FORCE_FLAG=""
+        if [[ "$1" == "--force" ]]; then
+            FORCE_FLAG="--force"
+            log_warning "Force rebuild requested - this will take several minutes"
+        fi
+
+        log_info "Embedding documents..."
+        python "$SCRIPT_DIR/qry_doc_search.py" embed $FORCE_FLAG
+        ;;
+
+    "reset")
+        echo "⚠️  This will delete all embeddings and you'll need to re-embed documents."
+        read -p "Continue? (y/N): " confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            log_info "Resetting collection..."
+            python "$SCRIPT_DIR/qry_doc_search.py" reset
+        else
+            log_info "Reset cancelled"
+        fi
+        ;;
+
+    "web")
+        log_info "Starting web interface..."
+        log_success "Web interface will be available at: http://localhost:5001"
+        echo
+        echo "Press Ctrl+C to stop the server"
+        echo
+        python "$SCRIPT_DIR/web_demo.py"
+        ;;
+
+    "help"|"--help"|"-h")
+        ./qry-search
+        ;;
+
+    *)
+        log_error "Unknown command: $COMMAND"
+        echo
+        echo "Run './qry-search' for usage information"
+        exit 1
+        ;;
+esac

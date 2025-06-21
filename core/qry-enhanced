@@ -1,0 +1,329 @@
+#!/bin/bash
+
+# QRY Enhanced Command - Central tool for QRY workspace operations
+# Usage: qry-enhanced <command> [args...]
+
+set -e
+
+# Configuration
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+WORKSPACE_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SCRIPTS_DIR="$SCRIPT_DIR/scripts"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Version
+VERSION="2.0.0"
+
+usage() {
+    cat << EOF
+${BLUE}QRY Enhanced${NC} - Your systematic workspace toolkit v${VERSION}
+
+Usage: qry <command> [args...]
+
+${CYAN}Search Commands:${NC}
+  search "terms"        Unified search across workspace and archives
+  search-active "terms" Search only active workspace (faster)
+  search-archive "terms" Search only archived content
+
+${CYAN}Archive Commands:${NC}
+  archive <path>        Move content to archive (preserves searchability)
+  unarchive <path>      Restore archived content to experiments/
+  archive-status        Show archive statistics
+
+${CYAN}Workspace Commands:${NC}
+  status               Show workspace overview
+  clean                Clean temporary files and optimize
+  backup               Create workspace backup
+
+${CYAN}Tool Commands:${NC}
+  tools                List available tools
+  install              Install/update QRY tools
+  update-search        Rebuild search index
+
+${CYAN}Development Commands:${NC}
+  capture "message"    Quick uroboro capture
+  publish              Generate and publish work summaries
+  claude               Launch Claude Code with QRY context
+  claude-bg            Launch Claude Code in background
+
+Examples:
+  qry search "ESP32 hardware"
+  qry archive experiments/old-prototype
+  qry status
+  qry capture "Fixed bug in search system"
+  qry claude
+
+For more help: qry <command> --help
+EOF
+    exit 0
+}
+
+error() {
+    echo -e "${RED}Error:${NC} $1" >&2
+    exit 1
+}
+
+success() {
+    echo -e "${GREEN}✓${NC} $1"
+}
+
+warn() {
+    echo -e "${YELLOW}Warning:${NC} $1"
+}
+
+info() {
+    echo -e "${BLUE}ℹ${NC} $1"
+}
+
+# Check if we're in a QRY workspace
+check_workspace() {
+    if [[ ! -f "$WORKSPACE_ROOT/README.md" ]] || [[ ! -d "$WORKSPACE_ROOT/tools" ]]; then
+        error "Not in a QRY workspace. Run this from your QRY directory."
+    fi
+}
+
+# Handle search commands
+cmd_search() {
+    local search_type="$1"
+    shift
+    local terms="$*"
+
+    if [[ -z "$terms" ]]; then
+        error "Search terms required. Usage: qry search \"your terms\""
+    fi
+
+    case "$search_type" in
+        "search")
+            "$SCRIPTS_DIR/qry-search-all.sh" "$terms"
+            ;;
+        "search-active")
+            "$SCRIPTS_DIR/qry-search-all.sh" "$terms" --active-only
+            ;;
+        "search-archive")
+            "$SCRIPTS_DIR/qry-search-all.sh" "$terms" --archived-only
+            ;;
+        *)
+            error "Unknown search type: $search_type"
+            ;;
+    esac
+}
+
+# Handle archive commands
+cmd_archive() {
+    local action="$1"
+    shift
+
+    case "$action" in
+        "archive")
+            if [[ -z "$1" ]]; then
+                error "Path required. Usage: qry archive <path>"
+            fi
+            "$SCRIPTS_DIR/qry-archive.sh" "$@"
+            ;;
+        "unarchive")
+            if [[ -z "$1" ]]; then
+                error "Archive path required. Usage: qry unarchive <archive-path>"
+            fi
+            # This would need a companion unarchive script
+            error "Unarchive functionality not yet implemented"
+            ;;
+        "archive-status")
+            local registry="$HOME/.qry-archive/search-registry.txt"
+            if [[ -f "$registry" ]]; then
+                echo -e "${BLUE}📦 Archive Status${NC}"
+                echo "Registry: $registry"
+                echo "Total archived items: $(wc -l < "$registry")"
+                echo "Archive location: $HOME/.qry-archive"
+                if [[ -d "$HOME/.qry-archive" ]]; then
+                    echo "Archive size: $(du -sh "$HOME/.qry-archive" 2>/dev/null | cut -f1)"
+                fi
+            else
+                echo "No archive registry found"
+            fi
+            ;;
+        *)
+            error "Unknown archive action: $action"
+            ;;
+    esac
+}
+
+# Show workspace status
+cmd_status() {
+    echo -e "${BLUE}📊 QRY Workspace Status${NC}"
+    echo ""
+
+    # Basic workspace info
+    echo -e "${CYAN}Workspace:${NC} $WORKSPACE_ROOT"
+
+    # Count active tools
+    if [[ -d "$WORKSPACE_ROOT/tools" ]]; then
+        local tool_count=$(find "$WORKSPACE_ROOT/tools" -maxdepth 1 -type d | tail -n +2 | wc -l)
+        echo -e "${CYAN}Active Tools:${NC} $tool_count"
+        find "$WORKSPACE_ROOT/tools" -maxdepth 1 -type d | tail -n +2 | while read -r tool; do
+            echo "  • $(basename "$tool")"
+        done
+    fi
+
+    # Count experiments
+    if [[ -d "$WORKSPACE_ROOT/experiments" ]]; then
+        local exp_count=$(find "$WORKSPACE_ROOT/experiments" -maxdepth 1 -type d | tail -n +2 | wc -l)
+        echo -e "${CYAN}Experiments:${NC} $exp_count"
+    fi
+
+    # Archive status
+    local registry="$HOME/.qry-archive/search-registry.txt"
+    if [[ -f "$registry" ]]; then
+        local archive_count=$(wc -l < "$registry")
+        echo -e "${CYAN}Archived Items:${NC} $archive_count"
+    fi
+
+    # Recent uroboro activity
+    if command -v uroboro > /dev/null; then
+        echo ""
+        echo -e "${CYAN}Recent Activity:${NC}"
+        uroboro status 2>/dev/null | head -n 5 || echo "  No recent activity"
+    fi
+}
+
+# Handle tool operations
+cmd_tools() {
+    echo -e "${BLUE}🔧 QRY Tools${NC}"
+    echo ""
+
+    if [[ -d "$WORKSPACE_ROOT/tools" ]]; then
+        find "$WORKSPACE_ROOT/tools" -maxdepth 2 -name "README.md" | while read -r readme; do
+            local tool_dir=$(dirname "$readme")
+            local tool_name=$(basename "$tool_dir")
+            local description=$(head -n 3 "$readme" | grep -E "^#|^-|^>" | head -n 1 | sed 's/^[#\->\s]*//')
+
+            echo -e "${GREEN}$tool_name${NC}"
+            if [[ -n "$description" ]]; then
+                echo "  $description"
+            fi
+            echo "  📁 $tool_dir"
+            echo ""
+        done
+    else
+        echo "No tools directory found"
+    fi
+}
+
+# Quick uroboro capture
+cmd_capture() {
+    local message="$*"
+    if [[ -z "$message" ]]; then
+        error "Capture message required. Usage: qry capture \"your message\""
+    fi
+
+    if command -v uroboro > /dev/null; then
+        uroboro capture "$message"
+        success "Captured: $message"
+    else
+        error "uroboro not found. Install uroboro tool first."
+    fi
+}
+
+# Update search index
+cmd_update_search() {
+    local doc_search="$WORKSPACE_ROOT/tools/doc-search"
+    if [[ -d "$doc_search" ]]; then
+        info "Updating search index..."
+        cd "$doc_search"
+        python3 qry_doc_search.py embed 2>/dev/null || {
+            warn "Search index update failed. Check doc-search setup."
+            return 1
+        }
+        success "Search index updated"
+    else
+        error "doc-search tool not found"
+    fi
+}
+
+# Launch Claude Code
+cmd_claude_code() {
+    local mode="$1"
+    local claude_script="$WORKSPACE_ROOT/core/scripts/launch-claude-code.sh"
+
+    if [[ ! -x "$claude_script" ]]; then
+        error "Claude Code integration script not found"
+        info "Expected: $claude_script"
+        return 1
+    fi
+
+    case "$mode" in
+        "claude-bg")
+            "$claude_script" --background --with-context
+            ;;
+        "claude"|"")
+            "$claude_script" --with-context
+            ;;
+        *)
+            error "Unknown Claude Code mode: $mode"
+            ;;
+    esac
+}
+
+# Main command dispatcher
+main() {
+    check_workspace
+
+    local command="$1"
+    shift || true
+
+    case "$command" in
+        # Search commands
+        "search"|"search-active"|"search-archive")
+            cmd_search "$command" "$@"
+            ;;
+
+        # Archive commands
+        "archive"|"unarchive"|"archive-status")
+            cmd_archive "$command" "$@"
+            ;;
+
+        # Workspace commands
+        "status")
+            cmd_status
+            ;;
+
+        "tools")
+            cmd_tools
+            ;;
+
+        "capture")
+            cmd_capture "$@"
+            ;;
+
+        "update-search")
+            cmd_update_search
+            ;;
+
+        # Claude Code commands
+        "claude"|"claude-bg")
+            cmd_claude_code "$command"
+            ;;
+
+        # Meta commands
+        "version")
+            echo "QRY Enhanced v${VERSION}"
+            ;;
+
+        "help"|"--help"|"-h"|"")
+            usage
+            ;;
+
+        *)
+            error "Unknown command: $command. Use 'qry help' for usage."
+            ;;
+    esac
+}
+
+# Run main function
+main "$@"

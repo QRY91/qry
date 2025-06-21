@@ -289,7 +289,11 @@ labs/projects/wherewasi/
 labs/projects/miqro/
 labs/projects/osmotic/
 labs/projects/qryai/
+labs/projects/atelier/
 zone/qryzone/
+zone
+
+experiments
 
 # Other projects with independent repos
 other_projects/*/
@@ -326,3 +330,4 @@ atelier/
 # But allow distribution archives
 !dist/*.zip
 !releases/*.tar.gz
+.aider*

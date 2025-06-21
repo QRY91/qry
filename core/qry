@@ -1,0 +1,550 @@
+#!/bin/bash
+
+# QRY Command Hub - CLI-First Development Environment
+# Central orchestration layer for the QRY tool ecosystem
+# Version: 0.1.0 (Prototype)
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Configuration
+QRY_CONFIG_DIR="$HOME/.config/qry"
+QRY_DATA_DIR="$HOME/.local/share/qry"
+QRY_PROJECTS_DIR="$HOME/projects"
+
+# Ensure config directories exist
+mkdir -p "$QRY_CONFIG_DIR" "$QRY_DATA_DIR"
+
+# Print functions
+print_header() {
+    echo -e "${BLUE}${BOLD}🚀 QRY${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}✅${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}❌${NC} $1"
+}
+
+print_info() {
+    echo -e "${CYAN}ℹ️${NC} $1"
+}
+
+# Tool detection
+find_tool() {
+    local tool=$1
+    local tool_path
+
+    # Check common locations
+    for path in "$QRY_PROJECTS_DIR/$tool/$tool" "$QRY_PROJECTS_DIR/qry/labs/projects/$tool/cmd/$tool/$tool" "$(which $tool 2>/dev/null)" "$HOME/bin/$tool"; do
+        if [[ -x "$path" ]]; then
+            echo "$path"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Get project directory
+get_project_path() {
+    local project=$1
+
+    # Check various locations
+    for base in "$QRY_PROJECTS_DIR" "$QRY_PROJECTS_DIR/qry" "$QRY_PROJECTS_DIR/qry/arcade/projects" "$PWD"; do
+        if [[ -d "$base/$project" ]]; then
+            echo "$base/$project"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Smart project switching
+cmd_cd() {
+    local project=${1:-}
+    local edit_flag=${2:-}
+
+    if [[ -z "$project" ]]; then
+        print_error "Usage: qry cd <project> [--edit]"
+        return 1
+    fi
+
+    local project_path
+    if ! project_path=$(get_project_path "$project"); then
+        print_error "Project '$project' not found"
+        print_info "Searched in: $QRY_PROJECTS_DIR, $QRY_PROJECTS_DIR/qry, $QRY_PROJECTS_DIR/qry/arcade/projects"
+        return 1
+    fi
+
+    print_header "Switching to project: $project"
+    echo "📁 Path: $project_path"
+
+    # Change directory
+    cd "$project_path" || return 1
+
+    # Update wherewasi context if available
+    if wherewasi_path=$(find_tool "wherewasi"); then
+        print_info "Updating context with wherewasi..."
+        "$wherewasi_path" pull "$project" 2>/dev/null || true
+    fi
+
+    # Show project status
+    if [[ -d ".git" ]]; then
+        echo "🔍 Git status:"
+        git status --porcelain | head -5
+        if [[ $(git status --porcelain | wc -l) -gt 5 ]]; then
+            echo "   ... and $(($(git status --porcelain | wc -l) - 5)) more files"
+        fi
+    fi
+
+    # Show recent uroboro captures if available
+    if uroboro_path=$(find_tool "uroboro"); then
+        echo "📝 Recent captures:"
+        "$uroboro_path" list --project "$project" --limit 3 2>/dev/null || echo "   No recent captures"
+    fi
+
+    # Open in Zed if requested
+    if [[ "$edit_flag" == "--edit" ]] || [[ "$edit_flag" == "-e" ]]; then
+        if command -v zed >/dev/null 2>&1; then
+            print_info "Opening in Zed..."
+            zed . &
+        else
+            print_warning "Zed not found, skipping editor launch"
+        fi
+    fi
+
+    print_success "Switched to $project"
+
+    # Start new shell in project directory
+    exec "$SHELL"
+}
+
+# Capture command (uroboro integration)
+cmd_capture() {
+    local message="$*"
+
+    if [[ -z "$message" ]]; then
+        print_error "Usage: qry capture <message>"
+        return 1
+    fi
+
+    if uroboro_path=$(find_tool "uroboro"); then
+        print_info "Capturing with uroboro..."
+        "$uroboro_path" capture "$message"
+        print_success "Captured: $message"
+    else
+        print_error "uroboro not found"
+        print_info "Searched for uroboro in common locations"
+        return 1
+    fi
+}
+
+# Cost management (qoins integration)
+cmd_costs() {
+    local action=${1:-status}
+
+    # Try multiple locations for qoins
+    local qoins_dir
+    for path in "./qoins" "$QRY_PROJECTS_DIR/qry/qoins" "$PWD/qoins"; do
+        if [[ -d "$path" ]]; then
+            qoins_dir="$path"
+            break
+        fi
+    done
+
+    if [[ -z "$qoins_dir" ]]; then
+        print_error "QOINs not found. Searched: ./qoins, $QRY_PROJECTS_DIR/qry/qoins, $PWD/qoins"
+        return 1
+    fi
+
+    case "$action" in
+        "status"|"")
+            print_header "Cost Status"
+            cd "$qoins_dir" && ./track_spending.sh status
+            ;;
+        "daily")
+            print_header "Daily Cost Check"
+            cd "$qoins_dir" && ./daily_check.sh
+            ;;
+        "optimize")
+            print_header "Cost Optimization"
+            cd "$qoins_dir" && ./optimize_costs.sh
+            ;;
+        "add")
+            shift
+            if [[ $# -lt 2 ]]; then
+                print_error "Usage: qry costs add <service> <amount> [description]"
+                return 1
+            fi
+            cd "$qoins_dir" && ./track_spending.sh add "$@"
+            ;;
+        *)
+            print_error "Unknown costs action: $action"
+            print_info "Available: status, daily, optimize, add"
+            return 1
+            ;;
+    esac
+}
+
+# Health monitoring (doggowoof integration)
+cmd_health() {
+    local action=${1:-status}
+
+    if doggowoof_path=$(find_tool "doggowoof"); then
+        case "$action" in
+            "status"|"")
+                print_header "System Health"
+                "$doggowoof_path" status
+                ;;
+            "monitor")
+                print_header "Health Monitor"
+                "$doggowoof_path" monitor
+                ;;
+            *)
+                print_error "Unknown health action: $action"
+                print_info "Available: status, monitor"
+                return 1
+                ;;
+        esac
+    else
+        print_error "doggowoof not found"
+        return 1
+    fi
+}
+
+# Context management (wherewasi integration)
+cmd_context() {
+    local action=${1:-status}
+
+    if wherewasi_path=$(find_tool "wherewasi"); then
+        case "$action" in
+            "status"|"")
+                print_header "Context Status"
+                "$wherewasi_path" status
+                ;;
+            "save")
+                shift
+                print_header "Saving Context"
+                "$wherewasi_path" save "$@"
+                ;;
+            "load")
+                shift
+                print_header "Loading Context"
+                "$wherewasi_path" load "$@"
+                ;;
+            *)
+                print_error "Unknown context action: $action"
+                print_info "Available: status, save, load"
+                return 1
+                ;;
+        esac
+    else
+        print_error "wherewasi not found"
+        return 1
+    fi
+}
+
+# AI tools
+cmd_ai() {
+    local action=${1:-chat}
+
+    # Try multiple locations for local AI script
+    local local_ai_script
+    for path in "./qoins/use_local_ai.sh" "$QRY_PROJECTS_DIR/qry/qoins/use_local_ai.sh" "$PWD/qoins/use_local_ai.sh"; do
+        if [[ -x "$path" ]]; then
+            local_ai_script="$path"
+            break
+        fi
+    done
+
+    if [[ -x "$local_ai_script" ]]; then
+        case "$action" in
+            "chat")
+                shift
+                "$local_ai_script" chat "${1:-mistral:latest}" "${@:2}"
+                ;;
+            "generate")
+                shift
+                "$local_ai_script" generate "${1:-mistral:latest}" "${@:2}"
+                ;;
+            "models")
+                "$local_ai_script" models
+                ;;
+            "test")
+                "$local_ai_script" test
+                ;;
+            *)
+                print_error "Unknown AI action: $action"
+                print_info "Available: chat, generate, models, test"
+                return 1
+                ;;
+        esac
+    else
+        print_error "Local AI script not found at $local_ai_script"
+        return 1
+    fi
+}
+
+# Documentation cleanup (slopsquid integration)
+cmd_slop() {
+    if slopsquid_path=$(find_tool "slopsquid"); then
+        "$slopsquid_path" "$@"
+    else
+        print_error "slopsquid not found"
+        return 1
+    fi
+}
+
+# Morning routine
+cmd_morning() {
+    print_header "Good Morning! Starting QRY environment..."
+    echo
+
+    # Cost check
+    print_info "Checking budget status..."
+    cmd_costs daily
+    echo
+
+    # Health check
+    print_info "Checking system health..."
+    cmd_health status
+    echo
+
+    # Context status
+    print_info "Context overview..."
+    cmd_context status
+    echo
+
+    # AI models check
+    print_info "AI models status..."
+    if command -v ollama >/dev/null 2>&1; then
+        echo "Available models:"
+        ollama list | head -6
+    else
+        print_warning "Ollama not available"
+    fi
+    echo
+
+    print_success "Morning routine complete! Ready to build amazing things 🚀"
+}
+
+# Cross-tool status
+cmd_status() {
+    local detailed=${1:-}
+
+    print_header "QRY Ecosystem Status"
+    echo
+
+    # Tool availability
+    echo -e "${BOLD}🛠️  Tool Availability:${NC}"
+    local tools=("uroboro" "wherewasi" "doggowoof" "slopsquid")
+    for tool in "${tools[@]}"; do
+        if find_tool "$tool" >/dev/null; then
+            echo -e "  ${GREEN}✅${NC} $tool"
+        else
+            echo -e "  ${RED}❌${NC} $tool"
+        fi
+    done
+
+    # QOINs system
+    local qoins_found=false
+    for path in "./qoins" "$QRY_PROJECTS_DIR/qry/qoins" "$PWD/qoins"; do
+        if [[ -d "$path" ]]; then
+            qoins_found=true
+            break
+        fi
+    done
+
+    if [[ "$qoins_found" == "true" ]]; then
+        echo -e "  ${GREEN}✅${NC} qoins"
+    else
+        echo -e "  ${RED}❌${NC} qoins"
+    fi
+    echo
+
+    # Current directory info
+    echo -e "${BOLD}📁 Current Location:${NC}"
+    echo "  Directory: $(pwd)"
+    if [[ -d ".git" ]]; then
+        echo "  Git branch: $(git branch --show-current 2>/dev/null || echo 'unknown')"
+        echo "  Git status: $(git status --porcelain | wc -l) modified files"
+    fi
+    echo
+
+    # AI status
+    echo -e "${BOLD}🤖 AI Status:${NC}"
+    if command -v ollama >/dev/null 2>&1; then
+        local model_count=$(ollama list | tail -n +2 | wc -l)
+        echo "  Ollama: ${GREEN}✅${NC} ($model_count models available)"
+    else
+        echo "  Ollama: ${RED}❌${NC} (not installed)"
+    fi
+    echo
+
+    if [[ "$detailed" == "--detailed" ]] || [[ "$detailed" == "-d" ]]; then
+        # Detailed status
+        echo -e "${BOLD}📊 Detailed Status:${NC}"
+        cmd_costs status 2>/dev/null || echo "  QOINs: Not available"
+        echo
+        cmd_health status 2>/dev/null || echo "  Health: Not available"
+    fi
+}
+
+# Session management
+cmd_session() {
+    local action=${1:-}
+    local project=${2:-}
+
+    case "$action" in
+        "")
+            # List sessions
+            if command -v tmux >/dev/null 2>&1; then
+                print_header "Active tmux sessions:"
+                tmux list-sessions 2>/dev/null || echo "No active sessions"
+            else
+                print_warning "tmux not available"
+            fi
+            ;;
+        "create"|"new")
+            if [[ -z "$project" ]]; then
+                print_error "Usage: qry session create <project>"
+                return 1
+            fi
+
+            if command -v tmux >/dev/null 2>&1; then
+                local session_name="qry-$project"
+                if tmux has-session -t "$session_name" 2>/dev/null; then
+                    print_info "Attaching to existing session: $session_name"
+                    tmux attach-session -t "$session_name"
+                else
+                    print_info "Creating new session: $session_name"
+                    local project_path
+                    if project_path=$(get_project_path "$project"); then
+                        tmux new-session -d -s "$session_name" -c "$project_path"
+                        tmux attach-session -t "$session_name"
+                    else
+                        tmux new-session -s "$session_name"
+                    fi
+                fi
+            else
+                print_error "tmux not available"
+                return 1
+            fi
+            ;;
+        *)
+            # Assume it's a project name
+            cmd_session create "$action"
+            ;;
+    esac
+}
+
+# Help command
+cmd_help() {
+    echo -e "${BLUE}${BOLD}QRY Command Hub${NC} - CLI-First Development Environment"
+    echo "Central orchestration layer for the QRY tool ecosystem"
+    echo
+    echo -e "${BOLD}Usage:${NC}"
+    echo "  qry <command> [options]"
+    echo
+    echo -e "${BOLD}Project Management:${NC}"
+    echo "  cd <project> [--edit]     Smart project switching with context"
+    echo "  status [--detailed]       Cross-tool ecosystem status"
+    echo "  morning                   Morning routine (costs, health, context)"
+    echo
+    echo -e "${BOLD}Development Tools:${NC}"
+    echo "  capture <message>         Capture development notes (uroboro)"
+    echo "  context [status|save|load] Context management (wherewasi)"
+    echo "  ai [chat|generate|models]  Local AI tools"
+    echo
+    echo -e "${BOLD}Cost & Monitoring:${NC}"
+    echo "  costs [status|daily|optimize] Budget management (qoins)"
+    echo "  health [status|monitor]   System health monitoring (doggowoof)"
+    echo
+    echo -e "${BOLD}Content Tools:${NC}"
+    echo "  slop <args>              Documentation cleanup (slopsquid)"
+    echo
+    echo -e "${BOLD}Session Management:${NC}"
+    echo "  session [project]        Create/attach tmux session"
+    echo
+    echo -e "${BOLD}Examples:${NC}"
+    echo "  qry cd quantum_dice --edit    # Switch to project and open Zed"
+    echo "  qry capture \"Fixed dice physics bug\""
+    echo "  qry costs daily              # Check budget status"
+    echo "  qry ai chat mistral:latest   # Start AI chat session"
+    echo "  qry morning                  # Full morning routine"
+    echo "  qry session quantum_dice     # Start project session"
+    echo
+    echo -e "${BOLD}Configuration:${NC}"
+    echo "  Config directory: $QRY_CONFIG_DIR"
+    echo "  Data directory: $QRY_DATA_DIR"
+    echo "  Projects directory: $QRY_PROJECTS_DIR"
+    echo
+    echo -e "${CYAN}💡 Tip:${NC} Use 'qry status' to check tool availability"
+}
+
+# Main command dispatcher
+main() {
+    local command=${1:-help}
+    shift || true
+
+    case "$command" in
+        "cd")
+            cmd_cd "$@"
+            ;;
+        "capture")
+            cmd_capture "$@"
+            ;;
+        "costs"|"cost")
+            cmd_costs "$@"
+            ;;
+        "health")
+            cmd_health "$@"
+            ;;
+        "context")
+            cmd_context "$@"
+            ;;
+        "ai")
+            cmd_ai "$@"
+            ;;
+        "slop")
+            cmd_slop "$@"
+            ;;
+        "morning")
+            cmd_morning "$@"
+            ;;
+        "status")
+            cmd_status "$@"
+            ;;
+        "session")
+            cmd_session "$@"
+            ;;
+        "help"|"--help"|"-h")
+            cmd_help "$@"
+            ;;
+        *)
+            print_error "Unknown command: $command"
+            echo "Use 'qry help' to see available commands"
+            return 1
+            ;;
+    esac
+}
+
+# Run main function
+main "$@"

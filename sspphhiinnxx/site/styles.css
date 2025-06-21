@@ -1,0 +1,102 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #0a0a0a;
+    color: #be98ec;
+    font-family: 'Courier New', monospace;
+    line-height: 1.6;
+    padding: 2rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    max-width: 800px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: normal;
+    letter-spacing: 0.2em;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px #be98ec;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+@keyframes soft-pulse {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.5; }
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: #888;
+    margin-bottom: 3rem;
+    font-style: italic;
+}
+
+.riddle {
+    border: 1px solid #333;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    background-color: #111;
+    border-radius: 4px;
+}
+
+.riddle-text {
+    font-style: italic;
+    color: #ffaa00;
+    margin-bottom: 1rem;
+}
+
+.cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+.footer {
+    position: absolute;
+    bottom: 1rem;
+    font-size: 0.8rem;
+    color: #444;
+}
+
+a {
+    color: #00ff41;
+    text-decoration: none;
+    border-bottom: 1px dotted #00ff41;
+}
+
+a:hover {
+    text-shadow: 0 0 5px #00ff41;
+}
+
+.ascii-art {
+    font-family: monospace;
+    white-space: pre;
+    animation: pulse 3s ease-in-out infinite;
+    line-height: 1;
+}
+.qry-logo {
+    /* font-family: monospace; */
+    opacity: 0.2;
+    line-height: normal;
+    white-space: pre;
+    animation: soft-pulse 30s ease-in-out infinite;
+}

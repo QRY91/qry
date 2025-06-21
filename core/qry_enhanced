@@ -1,0 +1,790 @@
+#!/bin/bash
+
+# QRY Enhanced Command Hub - Context-Aware CLI Environment
+# Version: 0.2.0 - Smart Navigation & Context Loading
+# Features: Fuzzy finding, automatic context, procedure memory
+
+set -e
+
+# Colors and formatting
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+DIM='\033[2m'
+NC='\033[0m'
+
+# Configuration paths
+QRY_CONFIG_DIR="$HOME/.config/qry"
+QRY_DATA_DIR="$HOME/.local/share/qry"
+QRY_CONTEXT_DB="$QRY_CONFIG_DIR/projects.json"
+QRY_PROCEDURES_DB="$QRY_CONFIG_DIR/procedures.json"
+QRY_ROOT="${QRY_ROOT:-$(pwd)}"
+
+# Ensure directories exist
+mkdir -p "$QRY_CONFIG_DIR" "$QRY_DATA_DIR"
+
+# Initialize context database if it doesn't exist
+init_context_db() {
+    if [[ ! -f "$QRY_CONTEXT_DB" ]]; then
+        cat > "$QRY_CONTEXT_DB" << 'EOF'
+{
+  "projects": {},
+  "aliases": {},
+  "last_updated": ""
+}
+EOF
+    fi
+}
+
+# Initialize procedures database
+init_procedures_db() {
+    if [[ ! -f "$QRY_PROCEDURES_DB" ]]; then
+        cat > "$QRY_PROCEDURES_DB" << 'EOF'
+{
+  "procedures": {},
+  "shortcuts": {},
+  "notes": {}
+}
+EOF
+    fi
+}
+
+# Print functions with enhanced formatting
+print_header() {
+    echo -e "${BLUE}${BOLD}🚀 QRY${NC} ${BOLD}$1${NC}"
+}
+
+print_project_header() {
+    echo -e "${PURPLE}${BOLD}📁 $1${NC}"
+}
+
+print_success() {
+    echo -e "${GREEN}✅${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}❌${NC} $1"
+}
+
+print_info() {
+    echo -e "${CYAN}ℹ️${NC} $1"
+}
+
+print_shortcut() {
+    echo -e "  ${YELLOW}$1${NC} → ${DIM}$2${NC}"
+}
+
+print_note() {
+    echo -e "  ${BLUE}💡${NC} $1"
+}
+
+# JSON helper functions (using jq if available, otherwise basic parsing)
+json_get() {
+    local file=$1
+    local key=$2
+    if command -v jq >/dev/null 2>&1; then
+        jq -r "$key // empty" "$file" 2>/dev/null
+    else
+        # Basic fallback - not robust but works for simple cases
+        grep "\"$key\"" "$file" 2>/dev/null | head -1 | sed 's/.*: *"\([^"]*\)".*/\1/' || echo ""
+    fi
+}
+
+json_set() {
+    local file=$1
+    local key=$2
+    local value=$3
+    if command -v jq >/dev/null 2>&1; then
+        local temp_file=$(mktemp)
+        jq "$key = \"$value\"" "$file" > "$temp_file" && mv "$temp_file" "$file"
+    else
+        print_warning "jq not available - some features limited"
+    fi
+}
+
+# Fuzzy find function
+fuzzy_find() {
+    local query="$1"
+    local -a candidates=("${@:2}")
+
+    if [[ ${#candidates[@]} -eq 0 ]]; then
+        return 1
+    fi
+
+    # If query is empty, return all candidates
+    if [[ -z "$query" ]]; then
+        printf '%s\n' "${candidates[@]}"
+        return 0
+    fi
+
+    # Simple fuzzy matching - case insensitive substring match
+    local matches=()
+    for candidate in "${candidates[@]}"; do
+        if [[ "${candidate,,}" == *"${query,,}"* ]]; then
+            matches+=("$candidate")
+        fi
+    done
+
+    # If no substring matches, try partial character matching
+    if [[ ${#matches[@]} -eq 0 ]]; then
+        for candidate in "${candidates[@]}"; do
+            local score=0
+            local pos=0
+            for (( i=0; i<${#query}; i++ )); do
+                local char="${query:$i:1}"
+                local found_pos="${candidate,,}"
+                found_pos="${found_pos#*${char,,}}"
+                if [[ "$found_pos" != "${candidate,,}" ]]; then
+                    ((score++))
+                fi
+            done
+            if [[ $score -gt 0 ]]; then
+                matches+=("$candidate")
+            fi
+        done
+    fi
+
+    printf '%s\n' "${matches[@]}"
+}
+
+# Project discovery
+discover_projects() {
+    local base_dir="${1:-$QRY_ROOT}"
+    local projects=()
+
+    # Look for common project indicators
+    while IFS= read -r -d '' dir; do
+        local dirname=$(basename "$dir")
+        local relative_path="${dir#$base_dir/}"
+
+        # Skip hidden directories and common non-project dirs
+        if [[ "$dirname" =~ ^\. ]] || [[ "$dirname" =~ ^(node_modules|vendor|target|build|dist)$ ]]; then
+            continue
+        fi
+
+        # Check for project indicators
+        if [[ -f "$dir/package.json" ]] || [[ -f "$dir/go.mod" ]] || [[ -f "$dir/Cargo.toml" ]] ||
+           [[ -f "$dir/README.md" ]] || [[ -f "$dir/main.py" ]] || [[ -d "$dir/.git" ]]; then
+            projects+=("$relative_path")
+        fi
+    done < <(find "$base_dir" -maxdepth 3 -type d -print0 2>/dev/null)
+
+    printf '%s\n' "${projects[@]}"
+}
+
+# Get project info
+get_project_info() {
+    local project_path="$1"
+    local full_path="$QRY_ROOT/$project_path"
+
+    if [[ ! -d "$full_path" ]]; then
+        return 1
+    fi
+
+    local project_type="unknown"
+    local status="active"
+
+    # Detect project type
+    if [[ -f "$full_path/package.json" ]]; then
+        project_type="javascript"
+    elif [[ -f "$full_path/go.mod" ]]; then
+        project_type="go"
+    elif [[ -f "$full_path/Cargo.toml" ]]; then
+        project_type="rust"
+    elif [[ -f "$full_path/requirements.txt" ]] || [[ -f "$full_path/setup.py" ]]; then
+        project_type="python"
+    elif [[ -f "$full_path/index.html" ]]; then
+        project_type="web"
+    fi
+
+    # Detect if it's a game
+    if [[ "$project_path" =~ (game|arcade|qoinbots|quantum|dice) ]]; then
+        project_type="game"
+    fi
+
+    # Detect if it's a tool
+    if [[ "$project_path" =~ (uroboro|slopsquid|doggowoof|wherewasi|qoins) ]]; then
+        project_type="tool"
+    fi
+
+    echo "$project_type:$status"
+}
+
+# Display project context
+display_project_context() {
+    local project_path="$1"
+    local project_name=$(basename "$project_path")
+    local full_path="$QRY_ROOT/$project_path"
+
+    print_project_header "Switching to: $project_name"
+    echo -e "${DIM}📍 Location: $full_path${NC}"
+
+    # Get project info
+    local info=$(get_project_info "$project_path")
+    local project_type="${info%:*}"
+    local status="${info#*:}"
+
+    # Display project type with emoji
+    case "$project_type" in
+        "javascript") echo -e "🟨 Type: JavaScript/Node.js project" ;;
+        "go") echo -e "🔵 Type: Go project" ;;
+        "rust") echo -e "🦀 Type: Rust project" ;;
+        "python") echo -e "🐍 Type: Python project" ;;
+        "game") echo -e "🎮 Type: Game project" ;;
+        "tool") echo -e "🛠️  Type: Development tool" ;;
+        "web") echo -e "🌐 Type: Web project" ;;
+        *) echo -e "📁 Type: General project" ;;
+    esac
+
+    echo -e "📊 Status: ${status^}"
+    echo
+
+    # Show shortcuts based on project type
+    echo -e "${BOLD}💡 Quick Actions:${NC}"
+    case "$project_type" in
+        "javascript")
+            if [[ -f "$full_path/package.json" ]]; then
+                print_shortcut "dev" "npm run dev"
+                print_shortcut "build" "npm run build"
+                print_shortcut "test" "npm test"
+            fi
+            ;;
+        "go")
+            print_shortcut "run" "go run ."
+            print_shortcut "build" "go build"
+            print_shortcut "test" "go test ./..."
+            ;;
+        "game")
+            if [[ -f "$full_path/play.sh" ]]; then
+                print_shortcut "play" "./play.sh"
+            fi
+            if [[ -f "$full_path/package.json" ]]; then
+                print_shortcut "dev" "npm run dev"
+            fi
+            ;;
+        "tool")
+            if [[ -f "$full_path/go.mod" ]]; then
+                print_shortcut "build" "go build -o $project_name ./cmd/$project_name"
+                print_shortcut "install" "cp $project_name ~/bin/"
+            fi
+            ;;
+    esac
+
+    # Show git status if available
+    if [[ -d "$full_path/.git" ]]; then
+        echo
+        echo -e "${BOLD}🔍 Git Status:${NC}"
+        local git_status=$(cd "$full_path" && git status --porcelain 2>/dev/null | head -3)
+        if [[ -n "$git_status" ]]; then
+            echo "$git_status" | while read -r line; do
+                echo "  $line"
+            done
+            local total_changes=$(cd "$full_path" && git status --porcelain 2>/dev/null | wc -l)
+            if [[ $total_changes -gt 3 ]]; then
+                echo "  ... and $((total_changes - 3)) more files"
+            fi
+        else
+            echo "  Working directory clean"
+        fi
+
+        # Show current branch
+        local branch=$(cd "$full_path" && git branch --show-current 2>/dev/null)
+        if [[ -n "$branch" ]]; then
+            echo "  Current branch: $branch"
+        fi
+    fi
+
+    # Show recent uroboro captures if available
+    if command -v uroboro >/dev/null 2>&1; then
+        echo
+        echo -e "${BOLD}📝 Recent Development:${NC}"
+        local captures=$(uroboro list --project "$project_name" --limit 3 2>/dev/null || echo "")
+        if [[ -n "$captures" ]]; then
+            echo "$captures" | while read -r line; do
+                if [[ -n "$line" ]]; then
+                    echo "  📌 $line"
+                fi
+            done
+        else
+            echo "  No recent captures"
+        fi
+    fi
+
+    # Show remembered procedures/notes
+    if [[ -f "$QRY_PROCEDURES_DB" ]]; then
+        local procedures=$(json_get "$QRY_PROCEDURES_DB" ".procedures[\"$project_name\"] // empty")
+        if [[ -n "$procedures" ]] && [[ "$procedures" != "null" ]]; then
+            echo
+            echo -e "${BOLD}📋 Remembered Procedures:${NC}"
+            echo "$procedures" | while read -r line; do
+                print_note "$line"
+            done
+        fi
+    fi
+
+    echo
+    print_success "Ready to work on $project_name!"
+    echo -e "${DIM}💬 Use 'qry help $project_name' for more options${NC}"
+}
+
+# Enhanced cd command with fuzzy finding and context
+cmd_cd_enhanced() {
+    local query="$1"
+    local show_info="${2:-}"
+
+    init_context_db
+
+    if [[ -z "$query" ]]; then
+        print_error "Usage: qry cd <project> [--info]"
+        echo "Use 'qry ls' to see available projects"
+        return 1
+    fi
+
+    # Special cases
+    case "$query" in
+        "."|".."|"~"|"/")
+            cd "$query" 2>/dev/null || { print_error "Cannot navigate to $query"; return 1; }
+            print_success "Changed directory to $(pwd)"
+            return 0
+            ;;
+    esac
+
+    # Discover projects if database is empty or old
+    local projects_list
+    if [[ ! -s "$QRY_CONTEXT_DB" ]] || [[ $(find "$QRY_CONTEXT_DB" -mtime +1 2>/dev/null) ]]; then
+        print_info "Scanning for projects..."
+        projects_list=($(discover_projects))
+    else
+        # Load from cache (basic implementation)
+        projects_list=($(discover_projects))
+    fi
+
+    if [[ ${#projects_list[@]} -eq 0 ]]; then
+        print_error "No projects found in $QRY_ROOT"
+        return 1
+    fi
+
+    # Fuzzy find the project
+    local matches=($(fuzzy_find "$query" "${projects_list[@]}"))
+
+    if [[ ${#matches[@]} -eq 0 ]]; then
+        print_error "No projects found matching '$query'"
+        print_info "Available projects:"
+        for project in "${projects_list[@]}"; do
+            echo "  $(basename "$project")"
+        done | head -10
+        return 1
+    fi
+
+    # If multiple matches, show them
+    if [[ ${#matches[@]} -gt 1 ]]; then
+        echo -e "${YELLOW}Multiple matches found:${NC}"
+        for i in "${!matches[@]}"; do
+            echo "  $((i+1)). $(basename "${matches[$i]}")"
+        done
+        echo
+        read -p "Select project (1-${#matches[@]}): " selection
+        if [[ "$selection" =~ ^[0-9]+$ ]] && [[ $selection -ge 1 ]] && [[ $selection -le ${#matches[@]} ]]; then
+            local selected_project="${matches[$((selection-1))]}"
+        else
+            print_error "Invalid selection"
+            return 1
+        fi
+    else
+        local selected_project="${matches[0]}"
+    fi
+
+    local target_path="$QRY_ROOT/$selected_project"
+
+    # Check if directory exists
+    if [[ ! -d "$target_path" ]]; then
+        print_error "Project directory not found: $target_path"
+        return 1
+    fi
+
+    # Change directory
+    cd "$target_path" || {
+        print_error "Cannot change to $target_path"
+        return 1
+    }
+
+    # Update wherewasi context if available
+    if command -v wherewasi >/dev/null 2>&1; then
+        wherewasi pull "$(basename "$selected_project")" 2>/dev/null || true
+    fi
+
+    # Display context unless specifically skipped
+    if [[ "$show_info" != "--quiet" ]]; then
+        echo
+        display_project_context "$selected_project"
+    fi
+
+    # Update access time in database (simplified)
+    # In a full implementation, this would update the JSON database
+
+    # Start a new shell in the project directory to maintain context
+    if [[ "$show_info" != "--no-shell" ]]; then
+        exec "$SHELL"
+    fi
+}
+
+# List projects command
+cmd_ls() {
+    local filter="${1:-}"
+
+    print_header "Available Projects"
+
+    local projects_list=($(discover_projects))
+
+    if [[ ${#projects_list[@]} -eq 0 ]]; then
+        print_warning "No projects found in $QRY_ROOT"
+        return 0
+    fi
+
+    echo -e "${BOLD}Found ${#projects_list[@]} projects:${NC}"
+    echo
+
+    # Group by category
+    local tools=()
+    local games=()
+    local web=()
+    local other=()
+
+    for project in "${projects_list[@]}"; do
+        local info=$(get_project_info "$project")
+        local project_type="${info%:*}"
+        local project_name=$(basename "$project")
+
+        case "$project_type" in
+            "tool") tools+=("$project_name") ;;
+            "game") games+=("$project_name") ;;
+            "web") web+=("$project_name") ;;
+            *) other+=("$project_name") ;;
+        esac
+    done
+
+    # Display by category
+    if [[ ${#tools[@]} -gt 0 ]]; then
+        echo -e "${BOLD}🛠️  Tools:${NC}"
+        for tool in "${tools[@]}"; do
+            echo "  $tool"
+        done
+        echo
+    fi
+
+    if [[ ${#games[@]} -gt 0 ]]; then
+        echo -e "${BOLD}🎮 Games:${NC}"
+        for game in "${games[@]}"; do
+            echo "  $game"
+        done
+        echo
+    fi
+
+    if [[ ${#web[@]} -gt 0 ]]; then
+        echo -e "${BOLD}🌐 Web Projects:${NC}"
+        for project in "${web[@]}"; do
+            echo "  $project"
+        done
+        echo
+    fi
+
+    if [[ ${#other[@]} -gt 0 ]]; then
+        echo -e "${BOLD}📁 Other Projects:${NC}"
+        for project in "${other[@]}"; do
+            echo "  $project"
+        done
+        echo
+    fi
+
+    echo -e "${DIM}💡 Use 'qry cd <project>' to navigate${NC}"
+}
+
+# Remember command for procedures
+cmd_remember() {
+    local project="${1:-$(basename "$PWD")}"
+    local note="$2"
+
+    if [[ -z "$note" ]]; then
+        print_error "Usage: qry remember [project] <note>"
+        return 1
+    fi
+
+    init_procedures_db
+
+    # Simple append to procedures (in a full implementation, this would use jq)
+    local timestamp=$(date '+%Y-%m-%d %H:%M')
+    local full_note="[$timestamp] $note"
+
+    print_info "Remembered for $project: $note"
+
+    # For now, just echo to a simple text file
+    echo "$full_note" >> "$QRY_DATA_DIR/procedures_$project.txt"
+
+    print_success "Note saved. Use 'qry procedures $project' to view all notes."
+}
+
+# Show procedures for a project
+cmd_procedures() {
+    local project="${1:-$(basename "$PWD")}"
+
+    local procedures_file="$QRY_DATA_DIR/procedures_$project.txt"
+
+    if [[ -f "$procedures_file" ]]; then
+        print_header "Procedures for $project"
+        echo
+        cat "$procedures_file"
+    else
+        print_info "No procedures recorded for $project"
+        echo "Use 'qry remember $project <note>' to add procedures"
+    fi
+}
+
+# Context scan command
+cmd_context_scan() {
+    print_header "Scanning for projects and building context database..."
+
+    init_context_db
+
+    local projects_list=($(discover_projects))
+    local count=${#projects_list[@]}
+
+    print_info "Found $count projects"
+
+    # Update timestamp
+    json_set "$QRY_CONTEXT_DB" ".last_updated" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+    print_success "Context database updated"
+    echo "Use 'qry ls' to see all projects"
+}
+
+# Enhanced status command
+cmd_status_enhanced() {
+    print_header "QRY Enhanced Environment Status"
+    echo
+
+    # Current location
+    echo -e "${BOLD}📍 Current Location:${NC}"
+    echo "  Directory: $(pwd)"
+    local relative_path="${PWD#$QRY_ROOT/}"
+    if [[ "$relative_path" != "$PWD" ]]; then
+        echo "  Project: $(basename "$relative_path")"
+    fi
+    echo
+
+    # Project statistics
+    local projects_list=($(discover_projects))
+    echo -e "${BOLD}📊 Project Statistics:${NC}"
+    echo "  Total projects: ${#projects_list[@]}"
+    echo "  QRY root: $QRY_ROOT"
+
+    # Database status
+    if [[ -f "$QRY_CONTEXT_DB" ]]; then
+        local last_updated=$(json_get "$QRY_CONTEXT_DB" ".last_updated")
+        echo "  Context DB: ✅ (updated: ${last_updated:-unknown})"
+    else
+        echo "  Context DB: ❌ (run 'qry context scan' to initialize)"
+    fi
+    echo
+
+    # Tool availability
+    echo -e "${BOLD}🛠️  Tool Availability:${NC}"
+    local tools=("uroboro" "wherewasi" "doggowoof" "slopsquid" "jq" "tmux" "zed")
+    for tool in "${tools[@]}"; do
+        if command -v "$tool" >/dev/null 2>&1; then
+            echo -e "  ${GREEN}✅${NC} $tool"
+        else
+            echo -e "  ${RED}❌${NC} $tool"
+        fi
+    done
+    echo
+
+    # AI status
+    echo -e "${BOLD}🤖 AI Status:${NC}"
+    if command -v ollama >/dev/null 2>&1; then
+        local model_count=$(ollama list 2>/dev/null | tail -n +2 | wc -l)
+        echo "  Ollama: ${GREEN}✅${NC} ($model_count models available)"
+    else
+        echo "  Ollama: ${RED}❌${NC} (not installed)"
+    fi
+
+    # Quick suggestions
+    echo
+    echo -e "${BOLD}💡 Quick Actions:${NC}"
+    echo "  qry ls              - List all projects"
+    echo "  qry cd <project>    - Navigate with context"
+    echo "  qry context scan    - Refresh project database"
+    echo "  qry morning         - Daily routine"
+}
+
+# Help command with enhanced features
+cmd_help_enhanced() {
+    local topic="$1"
+
+    if [[ -n "$topic" ]]; then
+        # Project-specific help
+        local procedures_file="$QRY_DATA_DIR/procedures_$topic.txt"
+        if [[ -f "$procedures_file" ]]; then
+            print_header "Help for $topic"
+            echo
+            cmd_procedures "$topic"
+            return 0
+        fi
+
+        print_warning "No specific help found for '$topic'"
+        echo
+    fi
+
+    echo -e "${BLUE}${BOLD}QRY Enhanced${NC} - Context-Aware Development Environment"
+    echo "Smart navigation with automatic context loading"
+    echo
+    echo -e "${BOLD}Enhanced Navigation:${NC}"
+    echo "  cd <query>              Fuzzy find and navigate to project"
+    echo "  cd <project> --info     Show detailed project information"
+    echo "  ls [--type=<type>]      List projects by category"
+    echo "  context scan            Scan and update project database"
+    echo
+    echo -e "${BOLD}Context Management:${NC}"
+    echo "  remember [project] <note>  Remember procedure or note"
+    echo "  procedures [project]       Show all procedures for project"
+    echo "  status                     Enhanced environment status"
+    echo
+    echo -e "${BOLD}Development Tools:${NC}"
+    echo "  capture <message>       Capture development notes (uroboro)"
+    echo "  costs [action]          Budget management (qoins)"
+    echo "  ai [action]             Local AI tools"
+    echo
+    echo -e "${BOLD}Examples:${NC}"
+    echo "  qry cd qoin             # Fuzzy match 'qoinbots'"
+    echo "  qry cd uro --info       # Navigate to uroboro with full context"
+    echo "  qry remember build      # Remember build procedure"
+    echo "  qry ls                  # List all projects by category"
+    echo
+    echo -e "${BOLD}Configuration:${NC}"
+    echo "  QRY_ROOT: $QRY_ROOT"
+    echo "  Config: $QRY_CONFIG_DIR"
+    echo "  Data: $QRY_DATA_DIR"
+    echo
+    echo -e "${CYAN}💡 Tip:${NC} Projects are auto-discovered. Use 'qry context scan' to refresh."
+}
+
+# Main command dispatcher with enhanced features
+main() {
+    local command=${1:-help}
+    shift || true
+
+    # Set QRY_ROOT if not already set
+    if [[ -z "$QRY_ROOT" ]]; then
+        # Try to find qry root by looking for characteristic directories
+        local current_dir="$PWD"
+        while [[ "$current_dir" != "/" ]]; do
+            if [[ -d "$current_dir/tools" ]] && [[ -d "$current_dir/arcade" ]] && [[ -d "$current_dir/labs" ]]; then
+                export QRY_ROOT="$current_dir"
+                break
+            fi
+            current_dir=$(dirname "$current_dir")
+        done
+
+        # Fallback to current directory
+        if [[ -z "$QRY_ROOT" ]]; then
+            export QRY_ROOT="$PWD"
+        fi
+    fi
+
+    case "$command" in
+        "cd")
+            cmd_cd_enhanced "$@"
+            ;;
+        "ls"|"list")
+            cmd_ls "$@"
+            ;;
+        "remember")
+            cmd_remember "$@"
+            ;;
+        "procedures")
+            cmd_procedures "$@"
+            ;;
+        "context")
+            local subcommand=${1:-scan}
+            case "$subcommand" in
+                "scan") cmd_context_scan ;;
+                *) print_error "Unknown context command: $subcommand" ;;
+            esac
+            ;;
+        "status")
+            cmd_status_enhanced "$@"
+            ;;
+        "capture")
+            # Delegate to uroboro if available
+            if command -v uroboro >/dev/null 2>&1; then
+                uroboro capture "$@"
+            else
+                print_error "uroboro not found"
+                return 1
+            fi
+            ;;
+        "costs")
+            # Delegate to existing qoins functionality
+            local qoins_dir
+            for path in "./qoins" "$QRY_ROOT/qoins" "$QRY_ROOT/tools/qoins"; do
+                if [[ -d "$path" ]]; then
+                    qoins_dir="$path"
+                    break
+                fi
+            done
+
+            if [[ -n "$qoins_dir" ]]; then
+                (cd "$qoins_dir" && ./track_spending.sh "$@")
+            else
+                print_error "QOINs not found"
+                return 1
+            fi
+            ;;
+        "ai")
+            # Delegate to AI tools
+            local ai_script
+            for path in "./qoins/use_local_ai.sh" "$QRY_ROOT/qoins/use_local_ai.sh" "$QRY_ROOT/tools/qoins/use_local_ai.sh"; do
+                if [[ -x "$path" ]]; then
+                    ai_script="$path"
+                    break
+                fi
+            done
+
+            if [[ -n "$ai_script" ]]; then
+                "$ai_script" "$@"
+            else
+                print_error "AI tools not found"
+                return 1
+            fi
+            ;;
+        "morning")
+            print_header "Good Morning! QRY Enhanced Environment Ready"
+            echo
+            cmd_status_enhanced --brief
+            echo
+            cmd_ls
+            ;;
+        "help"|"--help"|"-h")
+            cmd_help_enhanced "$@"
+            ;;
+        *)
+            print_error "Unknown command: $command"
+            echo "Use 'qry help' to see available commands"
+            return 1
+            ;;
+    esac
+}
+
+# Initialize on first run
+init_context_db
+init_procedures_db
+
+# Run main function
+main "$@"

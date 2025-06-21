@@ -1,81 +1,36 @@
-# Zone: QRY Master Hub
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-**Domain**: qry.zone  
-**Purpose**: Master brand coordination and ecosystem navigation
+## Getting Started
 
----
+First, run the development server:
 
-*The central hub that connects all QRY domains and projects*
-
-## Directory Purpose
-
-This directory contains the main qry.zone website - the master brand hub that provides navigation and coordination across the entire QRY ecosystem.
-
-### Content Structure
-
-```
-zone/
-├── website/          # Main qry.zone site files
-├── about/           # QRY Labs story and philosophy
-└── README.md        # This file
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## Domain Strategy
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-**qry.zone serves as the ecosystem traffic director**:
-- **labs.qry.zone** → Developer tools and systematic methodology
-- **arcade.qry.zone** → Educational games and playful learning  
-- **tools.qry.zone** → Utilities and experimental projects
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### Key Functions
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-1. **Brand Coordination**: Unified QRY identity across all properties
-2. **Navigation Hub**: Clear pathways to different audience experiences
-3. **Philosophy Communication**: Core "Square Peg. Round Hole." messaging
-4. **Professional Credibility**: Cohesive ecosystem presentation
+## Learn More
 
-## Target Audiences
+To learn more about Next.js, take a look at the following resources:
 
-### **Primary Visitors**
-- Developers discovering QRY tools for the first time
-- Potential collaborators and hiring managers
-- Community members exploring the full ecosystem
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### **Navigation Patterns**
-- **Technical audience** → Guided to labs.qry.zone
-- **Learning audience** → Directed to arcade.qry.zone
-- **Professional contacts** → About section and ecosystem overview
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Content Guidelines
+## Deploy on Vercel
 
-### **Messaging Principles**
-- **Clear value proposition**: Immediately understand what QRY offers
-- **Audience respect**: Don't force wrong content on wrong people
-- **Systematic approach**: Demonstrate methodology through site design
-- **Square hole creation**: Show alternatives to conventional approaches
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### **Brand Elements**
-- **Square format consistency**: Visual reinforcement of different thinking
-- **Psychology-informed design**: User experience that works with human psychology
-- **Local-first emphasis**: Privacy and user control messaging
-- **Professional authenticity**: Credible but genuine personality
-
-## Technical Requirements
-
-### **Performance Standards**
-- Fast loading times (< 2 seconds)
-- Mobile-responsive design
-- Accessibility compliance
-- SEO optimization for ecosystem discoverability
-
-### **Integration Points**
-- Subdomain navigation components
-- Shared analytics and tracking
-- Cross-domain user experience consistency
-- Community and contact integration
-
----
-
-**This is where people first encounter QRY - make it count.**
-
-*The front door to systematic innovation and square hole creation.*
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
