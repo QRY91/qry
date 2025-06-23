@@ -306,6 +306,8 @@ other_projects/gamedev/*
 work/
 atelier/
 
+sspphhiinnxx/*
+
 # But keep project profile documentation
 !**/project_profile.md
 !**/meta_capture_demo.md
